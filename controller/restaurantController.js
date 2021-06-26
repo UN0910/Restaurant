@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 var validate = require("validate.js");
-const superAdminModel=require('../model/superAdminModel');
+const superAdminModel = require('../model/superAdminModel');
 const Restaurant = require("../model/restaurantModel");
 
 
@@ -10,20 +10,32 @@ const Restaurant = require("../model/restaurantModel");
 
 /////////------ User SignIn ----////////////////
 exports.createRestaurant = (req, res) => {
-  const { lang , long } = req.body;
-  let coordinates=[lang,long]
-  let location={type: "Point",coordinates:coordinates}
-  const newRestaurant=new Restaurant({
-    location:location
+  const { restaurant_name, cuisines, opening_timings, current_rating, thumbnail_images
+    , restaurant_images, address, latitude, longitude, phone
+
+    , menu } = req.body;
+  let coordinates = [latitude, longitude]
+  let location = { type: "Point", coordinates: coordinates }
+  const newRestaurant = new Restaurant({
+    location: location,
+    cuisines: cuisines,
+    opening_timings: opening_timings,
+    current_rating: current_rating,
+    menu: menu,
+    thumbnail_images: thumbnail_images,
+    restaurant_images: restaurant_images,
+    address: address,
+    phone: phone,
+    restaurant_name: restaurant_name
   })
-  newRestaurant.save().then(found=>{
+  newRestaurant.save().then(found => {
     res.json(found)
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err)
   })
 };
 // exports.getNearby = (req, res) => {
- 
+
 //   Restaurant.find({
 //     location: {
 //      $near: {
