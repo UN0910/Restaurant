@@ -9,7 +9,7 @@ const RestaurantSchema = new mongoose.Schema({
         type: String
     },
     current_rating:{type:Number},
-    menuList:{ _id:false,pdf_link:{type:String} },
+    menuList:[{ _id:false,menu_name:{type:String},pdf_link:{type:String} }],
     address: {
         type: String
     },
