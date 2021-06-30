@@ -5,10 +5,16 @@ var restaurantController=require('../controller/RestaurantController')
 router.get('/get-all-restaurants',restaurantController.getAllRestaurant,err=>{
   console.log('error while signup user')
 })
-router.get('/get-restaurant-detail-by-id/:id',restaurantController.getRestaurantById,err=>{
+router.get('/getRestaurantById/:id',restaurantController.getRestaurantById,err=>{
   console.log('error while signup user')
 })
 router.post('/createRestaurant',restaurantController.createRestaurant,err=>{
+  console.log('error while signup user')
+})
+router.put('/addFloorToRestaurant/:restaurantId',restaurantController.addFloorToRestaurant,err=>{
+  console.log('error while signup user')
+})
+router.put('/removeFloorFromRestaurant/:restaurantId',restaurantController.RemoveFloorFromRestaurant,err=>{
   console.log('error while signup user')
 })
 
