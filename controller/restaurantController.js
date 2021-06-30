@@ -9,8 +9,15 @@ const Floor = require("../model/floorModel");
 
 
 exports.getAllRestaurant = (req, res) => {
-  Restaurant.find({}).then(foundRestaurant=>{
-res.json({error:false,data:"Successfully"})
+  Restaurant.find({}).populate('restaurant_floors.floor')
+  .populate({ path: "restaurant_floors.floor",
+  model: "Floor",
+  populate: {
+    path: "tables",
+    model: "Table",
+  },})
+  .then(foundRestaurant=>{
+res.json({error:false,data:foundRestaurant})
   }).catch(err=>{
     res.status(503).json({error:true,data:'Something went wrong with db',errMsg:err})
   })
@@ -26,11 +33,12 @@ res.json({error:false,data:"Successfully"})
 /////////------ Super Admin Can Create Restaurant ----////////////////
 exports.createRestaurant = (req, res) => {
   const { restaurant_name, cuisines, opening_timings, current_rating, thumbnail_images
-    , restaurant_images, address, latitude, longitude, phone, menuList } = req.body;
+    , restaurant_images, address, latitude, longitude, phone, menuList,restaurant_floors } = req.body;
   let coordinates = [latitude, longitude]
   let location = { type: "Point", coordinates: coordinates }
   const newRestaurant = new Restaurant({
     location: location,
+    restaurant_floors:restaurant_floors,
     cuisines: cuisines,
     opening_timings: opening_timings,
     current_rating: current_rating,

@@ -8,7 +8,7 @@ router.get('/get-all-restaurants',restaurantController.getAllRestaurant,err=>{
 router.get('/get-restaurant-detail-by-id/:id',restaurantController.getRestaurantById,err=>{
   console.log('error while signup user')
 })
-router.post('/create-restaurant',restaurantController.createRestaurant,err=>{
+router.post('/createRestaurant',restaurantController.createRestaurant,err=>{
   console.log('error while signup user')
 })
 
