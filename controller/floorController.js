@@ -30,3 +30,12 @@ exports.getFloorById=(req,res)=>{
       res.status(503).json({error:true,data:'Something went wrong with db',errMsg:err})
     })
 }
+exports.addTableToFloor=(req,res)=>{
+  Floor.findByIdAndUpdate(categoryId,{$push: { subCategory: {subCategory_name:subCategoryName} }}).then(found => {
+
+    res.status(201).json({ error: false, data: "Updated"})
+
+  }).catch(err => {
+    res.status(503).json({error:true,data:'Something went wrong with db',errMsg:err})
+  })
+}
