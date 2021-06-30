@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 var authRouter = require('./routes/Auth');
 var RestaurantRouter = require('./routes/restaurant');
 var tableRouter = require('./routes/table');
+var floorRouter = require('./routes/floor');
 
 
 
@@ -38,6 +39,7 @@ app.get('/', function(req, res, next) {
 app.use('/',authRouter)
 app.use('/',RestaurantRouter)
 app.use('/',tableRouter)
+app.use('/',floorRouter)
 
 
 
