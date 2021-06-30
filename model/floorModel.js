@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const FloorSchema = new mongoose.Schema({ 
- floorName:{
+  floor_name:{
       type:String
   },
  tables:[
