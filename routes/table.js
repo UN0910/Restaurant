@@ -1,15 +1,18 @@
 var express = require('express');
 var router = express.Router();
 var tableController=require('../controller/tableController')
+const verifySuperAdmin=require('../middleware/verifySuperAdmin')
 
-
-router.post('/createTable',tableController.createTable,err=>{
+router.get('/get-tables',verifySuperAdmin,tableController.getAllTables,err=>{
+  console.log('error while signup user')
+})
+router.post('/createTable',verifySuperAdmin,tableController.createTable,err=>{
     console.log('error while signup user')
   })
-  router.put('/editTable',tableController.editTable,err=>{
+  router.put('/editTable/:id',verifySuperAdmin,tableController.editTable,err=>{
     console.log('error while signup user')
   })
-  router.post('/changeTableStatus?',tableController.changeTableStatus,err=>{
+  router.post('/changeTableStatus?',verifySuperAdmin,tableController.changeTableStatus,err=>{
     console.log('error while signup user')
   })
 // router.get('/getNearby',restaurantController.getNearby,err=>{

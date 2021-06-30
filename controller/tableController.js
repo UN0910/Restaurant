@@ -33,3 +33,10 @@ const {id,status}=req.query
     res.status(503).json({ error: true, data: 'Something went wrong with db', errMsg: err })
   })
 }
+exports.getAllTables=(req,res)=>{
+  Table.find({}).then(found=>{
+    res.json({ error: false, data: found })
+  }).catch(err => {
+    res.status(503).json({ error: true, data: 'Something went wrong with db', errMsg: err })
+  })
+}

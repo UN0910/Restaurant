@@ -12,7 +12,8 @@ const tableSchema = new mongoose.Schema({
   },
   upcomingslots:{
       type:Array
-  }
+  },
+ 
 });
 
 const Table = mongoose.model("Table", tableSchema);
