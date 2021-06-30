@@ -23,3 +23,10 @@ exports.editFloor=(req,res)=>{
     })
   
   }
+exports.getFloorById=(req,res)=>{
+  Floor.findById(req.params.id).then(found=>{
+    res.json({error:false,data:found})
+    }).catch(err => {
+      res.status(503).json({error:true,data:'Something went wrong with db',errMsg:err})
+    })
+}
