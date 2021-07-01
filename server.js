@@ -9,13 +9,11 @@ var authRouter = require('./routes/Auth');
 var RestaurantRouter = require('./routes/restaurant');
 
 
-
-
-
 mongoose.connect(process.env.MONGO_URL,{
   useNewUrlParser:true,
   useUnifiedTopology:true
 });
+
 app.use(express.static(path.join(__dirname, 'public')));
 mongoose.connection.on("connected", () => {
 console.log("connected to mongo yeah !");
@@ -36,9 +34,6 @@ app.get('/', function(req, res, next) {
 // Auth Routers
 app.use('/',authRouter)
 app.use('/',RestaurantRouter)
-
-
-
 
 
 
