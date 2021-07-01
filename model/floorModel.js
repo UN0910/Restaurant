@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const FloorSchema = new mongoose.Schema({ 
-  floor_name:{
+ floorName:{
       type:String
   },
- tables:[
-   {type: mongoose.Schema.Types.ObjectId,ref:'Table'}
- ]
+ tables:{
+      type:Array
+  }
 });
 
 const Floor = mongoose.model("Floor", FloorSchema);

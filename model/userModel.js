@@ -1,42 +1,52 @@
 const mongoose = require("mongoose");
-const StudentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  mobile: {
-    required: true,
-    type: Number,
-  },
- 
-  // For forgot password purpose
-  otp: {
-    type: String,
-  },
-  ResetToken: {
-    type: String,
-  },
-  expireToken: {
-    type: Date,
-  }
-  ,myCart:[
-    {
-      _id:false,
-      date:{type:Date},
-      courseId:{type:Object}
+
+const userSchema = new mongoose.Schema({
+    name : {
+        type : String,
+        required : true
+    },
+    password : {
+        type : String,
+        required : true
+    },
+    email : {
+        type : String,
+        required : true,
+        unique : true
+    },
+    phone : {
+        type : Number,
+        required : true,
+        min : 10,
+        max : 10
+    },
+    dob : {
+        type : Date,
+        required : true
+    },
+    profile_img : {
+        type : String,
+        required : true
+    },
+    loyalty_points : {
+        type : [{type: mongoose.Schema.Types.ObjectId, ref: 'Loyalty' }]
+    },
+    favourite_restaurants : {
+        type : Array
+    },
+    cuisine_preferences : {
+        type : Array
+    },
+    transaction : {
+        type  : String
+    },
+    reviews : {
+        type:[{type : mongoose.Schema.Types.ObjectId, ref : 'Review'}]
+    },
+    inquiries : {
+        type:[{type : mongoose.Schema.Types.ObjectId, ref : 'Inquiry'}]
     }
-  ]
+}); 
 
-
-});
-
-const Student = mongoose.model("User", StudentSchema);
-module.exports = Student;
+const User = new mongoose.model("User",userSchema);
+module.exports = User;
