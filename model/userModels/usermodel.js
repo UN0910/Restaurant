@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
         required : true
     },
     loyalty_points : {
-        type: mongoose.Schema.Types.ObjectId, ref: 'Loyalty' 
+        type : [{type: mongoose.Schema.Types.ObjectId, ref: 'Loyalty' }]
     },
     favourite_restaurants : {
         type : Array
@@ -41,10 +41,10 @@ const userSchema = new mongoose.Schema({
         type  : String
     },
     reviews : {
-        type : mongoose.Schema.Types.ObjectId, ref : 'Review'
+        type:[{type : mongoose.Schema.Types.ObjectId, ref : 'Review'}]
     },
     inquiries : {
-        type : mongoose.Schema.Types.ObjectId, ref : 'Inquiry'
+        type:[{type : mongoose.Schema.Types.ObjectId, ref : 'Inquiry'}]
     }
 });
 
