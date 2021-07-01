@@ -2,7 +2,19 @@ const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 var validate = require("validate.js");
 const superAdminModel=require('../model/superAdminModel')
+const User = require("../model/userModel");
+const multer = require("multer");
 
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+ 
+var upload = multer({ storage: storage })
 
 /////////------ User SignUp ----////////////////
 
@@ -109,6 +121,66 @@ exports.Signin = (req, res) => {
         res
           .status(404)
           .json({ error: "User not found of " + email + " address" });
+      }
+    });
+  }
+};
+
+
+/* User login....... */
+// upload.single("image"),
+exports.userSignup = (req,res)=>{
+
+  const email = req.body.email;
+  const password = req.body.password;
+  const phone = req.body.phone;
+  const dob = req.body.dob;
+  const name = req.body.name;
+  let profile_img;
+
+  // !req.file
+  if(!email || !password || !phone || !dob || !name ){
+    res.status(400).json({error : "All fields are necessary"});
+    return console.log("Empty Fields");
+  } else{
+    User.findOne({email : email},(err,result)=>{
+      if(err){
+        res.status(400).json({error : "Error is db"});
+        return console.log("Error in finding the user");
+      } else if(result){
+        res.status(400).json({error : "Email is already in use!"});
+        return console.log("Email already in use");
+      }else{
+        // profile_img = req.file.filename;
+
+        bcryptjs.hash(password,12,(err,hash)=>{
+          const user = new User({
+            email : email,
+            password : hash,
+            phone : phone,
+            dob : dob,
+            // profile_img : profile_img,
+            name : name
+          });
+
+          user.save((err)=>{
+            if(err){
+              console.log(err);
+              res.status(400).json({error : "Error while saving user data!"});
+            }else{
+              const token = jwt.sign(
+                { secretId: user.email },
+                process.env.JWT_SECRET
+              );
+              res.status(200).json({
+                message: "SignSuccess",
+                token: token,
+                email: user.email,
+                name: user.name,
+              });
+            }
+          });
+        });
       }
     });
   }

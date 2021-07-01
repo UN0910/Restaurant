@@ -9,8 +9,7 @@ var authRouter = require('./routes/Auth');
 var RestaurantRouter = require('./routes/restaurant');
 var tableRouter = require('./routes/table');
 var floorRouter = require('./routes/floor');
-
-
+var userSignUp = require("./routes/Auth");
 
 
 
@@ -41,8 +40,7 @@ app.use('/',RestaurantRouter)
 app.use('/',tableRouter)
 app.use('/',floorRouter)
 
-
-
+app.use(userSignUp);
 
 
 

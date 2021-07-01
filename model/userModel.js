@@ -16,17 +16,14 @@ const userSchema = new mongoose.Schema({
     },
     phone : {
         type : Number,
-        required : true,
-        min : 10,
-        max : 10
+        required : true
     },
     dob : {
-        type : Date,
+        type : String,
         required : true
     },
     profile_img : {
-        type : String,
-        required : true
+        type : String
     },
     loyalty_points : {
         type : [{type: mongoose.Schema.Types.ObjectId, ref: 'Loyalty' }]
