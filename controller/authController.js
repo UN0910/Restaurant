@@ -3,18 +3,9 @@ const bcryptjs = require("bcryptjs");
 var validate = require("validate.js");
 const superAdminModel=require('../model/superAdminModel')
 const User = require("../model/userModel");
-const multer = require("multer");
 
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '/uploads')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
-  }
-})
  
-var upload = multer({ storage: storage })
+
 
 /////////------ User SignUp ----////////////////
 
@@ -128,7 +119,7 @@ exports.Signin = (req, res) => {
 
 
 /* User login....... */
-// upload.single("image"),
+
 exports.userSignup = (req,res)=>{
 
   const email = req.body.email;
@@ -138,11 +129,34 @@ exports.userSignup = (req,res)=>{
   const name = req.body.name;
   let profile_img;
 
-  // !req.file
-  if(!email || !password || !phone || !dob || !name ){
-    res.status(400).json({error : "All fields are necessary"});
-    return console.log("Empty Fields");
-  } else{
+  let validation = validate(req.body,{
+    email : {
+      presence : true,
+      email : true
+    },
+    password : {
+      presence : true,
+      length : {minimum: 6, message : "Password must be 8 characters long"}
+    },
+    phone : {
+      presence : true,
+      length : {minimum: 10, maximum : 10, message : "Enter a valid phone number"}
+    },
+    dob : {
+      presence : true
+    },
+    profile_img : {
+      presence : true
+    },
+    name :{
+      presence : true
+    }
+  });
+
+  if(validation){
+    res.status(400).json({error : validation});
+    return console.log(validation);
+  }else{
     User.findOne({email : email},(err,result)=>{
       if(err){
         res.status(400).json({error : "Error is db"});
@@ -151,17 +165,19 @@ exports.userSignup = (req,res)=>{
         res.status(400).json({error : "Email is already in use!"});
         return console.log("Email already in use");
       }else{
-        // profile_img = req.file.filename;
+        profile_img = req.file.filename;
 
         bcryptjs.hash(password,12,(err,hash)=>{
-          const user = new User({
-            email : email,
-            password : hash,
-            phone : phone,
-            dob : dob,
-            // profile_img : profile_img,
-            name : name
-          });
+          if(!err){
+            const user = new User({
+              email : email,
+              password : hash,
+              phone : phone,
+              dob : dob,
+              profile_img : profile_img,
+              name : name
+            });
+          }
 
           user.save((err)=>{
             if(err){
