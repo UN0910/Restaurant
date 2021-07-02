@@ -118,7 +118,7 @@ exports.Signin = (req, res) => {
 };
 
 
-/* User login....... */
+/* User signup....... */
 
 exports.userSignup = (req,res)=>{
 
@@ -197,6 +197,59 @@ exports.userSignup = (req,res)=>{
             }
           });
         });
+      }
+    });
+  }
+};
+
+/////////------ User SignIn 2 ----////////////////
+exports.userSignIn = (req, res) => {
+  const { email, password } = req.body;
+  let validation = validate(req.body, {
+    email: {
+      presence: true,
+      email: true,
+    },
+    password: {
+      presence: true,
+    },
+  });
+
+  if (validation) {
+    res.status(400).json({ error: validation });
+    return console.log(validation);
+  } else {
+    User.findOne({ email: email }).then((user) => {
+      if (user) {
+        // console.log(password,user.password)
+        bcryptjs
+          .compare(password, user.password)
+          .then((ifSame) => {
+            //if user is normal user
+            if (ifSame) {
+              let md5 = require("md5");
+              let userId = md5(user._id);
+              const token = jwt.sign(
+                { secretId: userId },
+                process.env.JWT_SECRET
+              );
+              res.json({
+                message: "SignSuccess",
+                token: token,
+                email: user.email,
+                name: user.name,
+              });
+            } else {
+              res.status(400).json({ error: "Invalid password" });
+            }
+          })
+          .catch((err) => {
+            console.log("error in comparing password", err);
+          });
+      } else {
+        res
+          .status(404)
+          .json({ error: "User not found of " + email + " address" });
       }
     });
   }

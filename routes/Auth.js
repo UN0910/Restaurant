@@ -24,4 +24,8 @@ router.post('/signin',adminAuthentication.Signin,err=>{
 
 router.route("/user/signup").post(upload.single("image"),adminAuthentication.userSignup);
 
+router.route('/user/signin').post(adminAuthentication.userSignIn,err=>{
+  console.log('error while signup user')
+})
+
 module.exports=router
