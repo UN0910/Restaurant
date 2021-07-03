@@ -10,7 +10,7 @@ const inquirySchema = new mongoose.Schema({
         required : true
     },
     messages : {
-        type : mongoose.Schema.Types.ObjectId, ref : 'Message'
+        type : [{type:mongoose.Schema.Types.ObjectId, ref : 'Message'}]
     }
 });
 

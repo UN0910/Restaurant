@@ -1,12 +1,7 @@
 var express = require('express');
 var validate = require("validate.js");
 var router = express.Router();
-<<<<<<< HEAD
 var adminAuthentication = require('../controller/authController');
-=======
-var adminAuthentication=require('../controller/authController');
-var path = require("path");
->>>>>>> 45fcdfd39125483eb26b7c8010e3f7357deeaee0
 
 /* GET home page. */
 router.post('/signup',adminAuthentication.Signup,err=>{

@@ -10,12 +10,8 @@ var RestaurantRouter = require('./routes/restaurant');
 var tableRouter = require('./routes/table');
 var floorRouter = require('./routes/floor');
 var userSignUp = require("./routes/Auth");
-<<<<<<< HEAD
 var ejs = require('ejs');
-=======
 var updateUser = require("./routes/userUpdate");
->>>>>>> 45fcdfd39125483eb26b7c8010e3f7357deeaee0
-
 
 mongoose.connect(process.env.MONGO_URL,{
   useNewUrlParser:true,
@@ -45,16 +41,12 @@ app.use('/',tableRouter)
 app.use('/',floorRouter)
 
 app.use(userSignUp);
-<<<<<<< HEAD
+app.use(updateUser);
 
 app.set('view engine', 'ejs');
 app.get("/reset-password/:token", function(req, res) {
   res.sendFile(__dirname + "/views/resetPassword.ejs");
 });
-=======
-app.use(updateUser);
-
->>>>>>> 45fcdfd39125483eb26b7c8010e3f7357deeaee0
 
 
 app.listen(process.env.PORT, () => {

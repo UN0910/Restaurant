@@ -3,13 +3,8 @@ const bcryptjs = require("bcryptjs");
 var validate = require("validate.js");
 const superAdminModel=require('../model/superAdminModel')
 const User = require("../model/userModel");
-<<<<<<< HEAD
-const nodemailer = require("nodemailer");
-
-=======
 const path = require("path");
->>>>>>> 45fcdfd39125483eb26b7c8010e3f7357deeaee0
- 
+const nodemailer = require("nodemailer");
 
 
 /////////------ User SignUp ----////////////////
@@ -172,7 +167,13 @@ exports.userSignup = (req,res)=>{
       const phone = req.body.phone;
       const dob = req.body.dob;
       const name = req.body.name;
-      const profile_img=req.file.filename;
+      let profile_img
+
+      if(req.file === undefined){
+        profile_img = ""
+      }else{
+        profile_img==req.file.filename;
+      }
 
   let validation = validate(req.body,{
     email : {
@@ -336,7 +337,7 @@ exports.forgotPassword = (req, res) => {
                   subject: "Password change request",
                   html: 
                   `<p>Hello, ${user.name}</p>
-                  <p>Follow this link to reset your OCEAN OF NOTES password for your ${user.email} account.</p>
+                  <p>Follow this link to reset your Restro App password for your ${user.email} account.</p>
                   <p>${link}</p>
                   <p>If you didn’t ask to reset your password, you can ignore this email.</p>
                   <p>Thanks,</p>
