@@ -1,6 +1,7 @@
 var express = require('express');
+var validate = require("validate.js");
 var router = express.Router();
-var adminAuthentication=require('../controller/authController');
+var adminAuthentication = require('../controller/authController');
 
 const multer = require("multer");
 
@@ -27,5 +28,11 @@ router.route("/user/signup").post(upload.single("image"),adminAuthentication.use
 router.route('/user/signin').post(adminAuthentication.userSignIn,err=>{
   console.log('error while signin user')
 })
+
+router.route('/forgot-password').post(adminAuthentication.forgotPassword);
+
+router.get('/reset-password/:token', adminAuthentication.reset);
+
+router.post('/reset-password/:token', adminAuthentication.resetPassword);
 
 module.exports=router
