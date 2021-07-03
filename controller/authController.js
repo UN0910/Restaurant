@@ -3,7 +3,12 @@ const bcryptjs = require("bcryptjs");
 var validate = require("validate.js");
 const superAdminModel=require('../model/superAdminModel')
 const User = require("../model/userModel");
+<<<<<<< HEAD
+const nodemailer = require("nodemailer");
+
+=======
 const path = require("path");
+>>>>>>> 45fcdfd39125483eb26b7c8010e3f7357deeaee0
  
 
 
@@ -287,4 +292,134 @@ exports.userSignIn = (req, res) => {
       }
     });
   }
+};
+
+/////////------ Forgot Password ----////////////////
+exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+  let validation = validate(req.body, {
+    email: {
+      presence: true,
+      email: true,
+    }
+  });
+
+  if (validation) {
+    res.status(400).json({ error: validation });
+    return console.log(validation);
+  } else {
+    User.findOne({ email: email })
+    .then((user) => {
+      if (!user) 
+      return res.status(401).json({ error: "User not found of " + email + " address" });
+
+            //Generate and set password reset token
+      user.generatePasswordReset();
+
+            // Save the updated user object
+      user.save()
+          .then(user => {
+              // send email
+              let link = "http://" + req.headers.host + "/reset-password/" + user.resetPasswordToken;
+
+              let transporter = nodemailer.createTransport({
+                service: "Gmail",
+                auth: {
+                    user: 'reallyfake715@gmail.com', // test user
+                    pass: 'ut8602782075', // test password
+                },
+              });
+
+              const mailOptions = {
+                  to: user.email,
+                  from: '"The Restro App" <theRestroApp@example.com>',
+                  subject: "Password change request",
+                  html: 
+                  `<p>Hello, ${user.name}</p>
+                  <p>Follow this link to reset your OCEAN OF NOTES password for your ${user.email} account.</p>
+                  <p>${link}</p>
+                  <p>If you didn’t ask to reset your password, you can ignore this email.</p>
+                  <p>Thanks,</p>
+                  <p>Your RESTRO APP team</p>`,
+              };
+
+              transporter.sendMail(mailOptions, (error, info)=>{
+                if(error){
+                  return console.log(error);
+                }
+                res.status(200).json({message: 'A reset email has been sent to ' + user.email + '.'});
+                console.log("Message sent: %s", info.messageId);
+                // Message sent: <xyz@example.com>               
+              });
+
+              res.send('Email Sent!');            
+          })
+          .catch(err => res.status(500).json({message: err.message})); 
+    })
+    .catch(err => res.status(500).json({message: err.message}));
+  };
+
+};
+
+/////////------ Reset ----////////////////
+exports.reset = (req, res) => {
+  User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}})
+      .then((user) => {
+          if (!user) 
+          return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+
+          //Redirect user to form with the email address
+          res.render('resetPassword', {user});
+      })
+      .catch(err => res.status(500).json({message: err.message}));
+};
+
+/////////------ Reset Password ----////////////////
+exports.resetPassword = async(req, res) => {
+  User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}})
+      .then((user) => {
+          if (!user) 
+          return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+
+          //Set the new password
+          user.password = req.body.password;
+          user.resetPasswordToken = undefined;
+          user.resetPasswordExpires = undefined;
+
+          // Save
+          user.save((err) => {
+              if (err) return res.status(500).json({message: err.message});
+
+              // send email
+              let transporter = nodemailer.createTransport({
+                service: "Gmail",
+                auth: {
+                    user: 'reallyfake715@gmail.com', // test user
+                    pass: 'ut8602782075', // test password
+                },
+              });
+
+              const mailOptions = {
+                  to: user.email,
+                  from: '"The Restro App" <theRestroApp@example.com>',
+                  subject: "Your password has been changed",
+                  html: 
+                  `<p>Hello, ${user.name}</p>
+                  <p>This is a confirmation that the password for your account ${user.email} has just been changed.</p>
+                  <p>Thanks,</p>
+                  <p>Your RESTRO APP team</p>`,
+              };
+
+              transporter.sendMail(mailOptions, (error, info)=>{
+                if(error){
+                  return console.log(error);
+                }
+                console.log("Message sent: %s", info.messageId);
+                // Message sent: <xyz@example.com>               
+              });
+
+              res.send('Password has been updated.');        
+          });
+      })
+      .catch(err => res.status(500).json({message: err.message}));
 };
