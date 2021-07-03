@@ -156,7 +156,7 @@ function checkFileType(file,cb){
 
 exports.userSignup = (req,res)=>{
 
-  console.log(req.file);
+  // console.log(req.file);
   upload(req,res,(err)=>{
     if(err){
       res.status(400).send({error : err});
