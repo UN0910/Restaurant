@@ -10,7 +10,7 @@ var RestaurantRouter = require('./routes/restaurant');
 var tableRouter = require('./routes/table');
 var floorRouter = require('./routes/floor');
 var userSignUp = require("./routes/Auth");
-
+var updateUser = require("./routes/userUpdate");
 
 
 mongoose.connect(process.env.MONGO_URL,{
@@ -41,7 +41,7 @@ app.use('/',tableRouter)
 app.use('/',floorRouter)
 
 app.use(userSignUp);
-
+app.use(updateUser);
 
 
 

@@ -3,7 +3,7 @@ const bcryptjs = require("bcryptjs");
 var validate = require("validate.js");
 const superAdminModel=require('../model/superAdminModel')
 const User = require("../model/userModel");
-
+const path = require("path");
  
 
 
@@ -48,7 +48,7 @@ exports.Signup = (req, res) => {
             .then((user) => {
              // console.log(user);
               const token = jwt.sign(
-                { secretId: user.uId },
+                { secretId: user.uId }, //it must be _id not uid please check
                 process.env.JWT_SECRET
               );
               res.json({
@@ -120,14 +120,54 @@ exports.Signin = (req, res) => {
 
 /* User signup....... */
 
+const multer = require("multer");
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname + '-' + Date.now()+path.extname(file.originalname));
+  }
+})
+
+var upload = multer({ 
+  storage: storage,
+  fileFilter : function(req, file, cb){
+    checkFileType(file,cb);
+  }
+}).single('image');
+
+function checkFileType(file,cb){
+  // Allowed extensions
+  const fileTypes = /jpeg|jpg|png/;
+
+  const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+
+  //Checking mimeType
+  const mimeType = fileTypes.test(file.mimetype);
+
+  if(mimeType && extName){
+    return cb(null,true);
+  }else{
+    cb("Error : Images only");
+  }
+}
+
 exports.userSignup = (req,res)=>{
 
-  const email = req.body.email;
-  const password = req.body.password;
-  const phone = req.body.phone;
-  const dob = req.body.dob;
-  const name = req.body.name;
-  let profile_img;
+  console.log(req.file);
+  upload(req,res,(err)=>{
+    if(err){
+      res.status(400).send({error : err});
+    }else{
+      // console.log(req.file.filename);
+      const email = req.body.email;
+      const password = req.body.password;
+      const phone = req.body.phone;
+      const dob = req.body.dob;
+      const name = req.body.name;
+      const profile_img=req.file.filename;
 
   let validation = validate(req.body,{
     email : {
@@ -143,9 +183,6 @@ exports.userSignup = (req,res)=>{
       length : {minimum: 10, maximum : 10, message : "Enter a valid phone number"}
     },
     dob : {
-      presence : true
-    },
-    profile_img : {
       presence : true
     },
     name :{
@@ -165,8 +202,6 @@ exports.userSignup = (req,res)=>{
         res.status(400).json({error : "Email is already in use!"});
         return console.log("Email already in use");
       }else{
-        profile_img = req.file.filename;
-
         bcryptjs.hash(password,12,(err,hash)=>{
           if(!err){
             const user = new User({
@@ -177,29 +212,28 @@ exports.userSignup = (req,res)=>{
               profile_img : profile_img,
               name : name
             });
-          }
-
+            
           user.save((err)=>{
             if(err){
               console.log(err);
               res.status(400).json({error : "Error while saving user data!"});
             }else{
               const token = jwt.sign(
-                { secretId: user.email },
+                { secretId: user._id},
                 process.env.JWT_SECRET
               );
               res.status(200).json({
                 message: "SignSuccess",
-                token: token,
-                email: user.email,
-                name: user.name,
               });
             }
           });
+          }
         });
       }
     });
   }
+    }
+  })  
 };
 
 /////////------ User SignIn 2 ----////////////////
