@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     loyalty_points : {
         type : [{type: mongoose.Schema.Types.ObjectId, ref: 'Loyalty' }]
     },
-    favourite_restaurants : {
+    favorites : {
         type : Array
     },
     cuisine_preferences : {
@@ -43,9 +43,9 @@ const userSchema = new mongoose.Schema({
     reviews : {
         type:[{type : mongoose.Schema.Types.ObjectId, ref : 'Review'}]
     },
-    inquiries : {
-        type:[{type : mongoose.Schema.Types.ObjectId, ref : 'Inquiry'}]
-    },
+    // inquiries : {
+    //     type:[{type : mongoose.Schema.Types.ObjectId, ref : 'enquiry'}]
+    // },
     resetPasswordToken: {
         type: String,
         required: false

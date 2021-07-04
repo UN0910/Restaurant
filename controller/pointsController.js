@@ -1,9 +1,9 @@
-const Loyalty = require("../model/loyaltyPointsModel");
+const Loyalty = require("../model/pointsModel");
 const User = require("../model/userModel");
 const express = require("express");
 
 
-exports.getLoyaltyPoints = (req,res)=>{
+exports.getpoints = (req,res)=>{
     const _id = req.params.id;
 
     Loyalty.findOne({customer : _id},(err,result)=>{
@@ -19,7 +19,7 @@ exports.getLoyaltyPoints = (req,res)=>{
 }
 
 
-exports.LoyaltyPoints = (req,res)=>{
+exports.points = (req,res)=>{
     const _id = req.body._id;
     const points = parseInt(req.body.points);
     const type = (req.body.type).toLowerCase();
