@@ -13,6 +13,7 @@ var userSignUp = require("./routes/Auth");
 var ejs = require('ejs');
 var updateUser = require("./routes/userUpdate");
 var inquiryRouter = require("./routes/inquiry");
+var loyaltyRouter = require("./routes/loyaltypointsRoute");
 
 mongoose.connect(process.env.MONGO_URL,{
   useNewUrlParser:true,
@@ -44,6 +45,7 @@ app.use('/',floorRouter)
 app.use(userSignUp);
 app.use(updateUser);
 app.use(inquiryRouter);
+app.use(loyaltyRouter);
 
 app.set('view engine', 'ejs');
 app.get("/reset-password/:token", function(req, res) {

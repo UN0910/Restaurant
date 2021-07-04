@@ -21,6 +21,9 @@ const loyaltySchema = new mongoose.Schema({
     type : {
         type : String,
         required : true
+    },
+    customer : {
+        type : mongoose.Schema.Types.ObjectId, ref : 'User'
     }    
 });
 
