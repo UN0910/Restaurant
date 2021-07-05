@@ -42,84 +42,90 @@ function checkFileType(file, cb) {
 }
 
 exports.register = (req, res) => {
-  try {
-    let { email, password } = req.body;
-    User.findOne({ email: email }, (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err });
+  upload(req,res,(err)=>{
+    if(err){
+      res.status(400).send({error : err});
+    }else{
+      // console.log(req.file.filename);
+      const email = req.body.email;
+      const password = req.body.password;
+      const phone = req.body.phone;
+      const dob = req.body.dob;
+      const name = req.body.name;
+      let profile_img
+
+      if(req.file === undefined){
+        profile_img = ""
+      }else{
+        profile_img==req.file.filename;
+      }
+
+  let validation = validate(req.body,{
+    email : {
+      presence : true,
+      email : true
+    },
+    password : {
+      presence : true,
+      length : {minimum: 6, message : "Password must be 8 characters long"}
+    },
+    phone : {
+      presence : true,
+      length : {minimum: 10, maximum : 10, message : "Enter a valid phone number"}
+    },
+    dob : {
+      presence : true
+    },
+    name :{
+      presence : true
+    }
+  });
+
+  if(validation){
+    res.status(400).json({error : validation});
+    return console.log(validation);
+  }else{
+    User.findOne({email : email},(err,result)=>{
+      if(err){
+        res.status(400).json({error : "Error is db"});
         return console.log("Error in finding the user");
-      } else if (result) {
-        res.status(400).json({ error: "Email is already taken!" });
+      } else if(result){
+        res.status(400).json({error : "Email is already in use!"});
         return console.log("Email already in use");
-      } else {
-        console.log(req.files)
-        if (req.files) {
-          upload(req, res, (err) => {
-            if (err) {
-              res.status(400).send({ error: err });
-            } else {
-              req.body.profile_img = req.files[0].path
-            }
-          });
-
-        }
-        let validation = validate(req.body, {
-          email: {
-            presence: true,
-            email: true
-          },
-          password: {
-            presence: true,
-            length: { minimum: 6, message: "Password must be 8 characters long" }
-          },
-          phone: {
-            presence: true,
-            length: { minimum: 10, maximum: 10, message: "Enter a valid phone number" }
-          },
-          dob: {
-            presence: true
-          },
-          name: {
-            presence: true
-          }
-        });
-
-        if (validation) {
-          res.status(400).json({ error: validation });
-          return console.log(validation);
-        } else {
-          bcryptjs.hash(password, 12, (err, hash) => {
-            if (!err) {
-              const user = new User(req.body);
-
-              user.save((err, result) => {
-                if (err) {
-                  console.log(err);
-                  res.status(400).json({ error: err });
-                } else {
-                  const token = jwt.sign(
-                    { secretId: user._id },
-                    process.env.JWT_SECRET
-                  );
-                  res.status(200).json({
-                    data: result,
-                    token,
-                    message: "User registered",
-                  });
-                }
+      }else{
+        bcryptjs.hash(password,12,(err,hash)=>{
+          if(!err){
+            const user = new User({
+              email : email,
+              password : hash,
+              phone : phone,
+              dob : dob,
+              profile_img : profile_img,
+              name : name
+            });
+            
+          user.save((err)=>{
+            if(err){
+              console.log(err);
+              res.status(400).json({error : "Error while saving user data!"});
+            }else{
+              const token = jwt.sign(
+                { secretId: user._id},
+                process.env.JWT_SECRET
+              );
+              res.status(200).json({
+                message: "SignSuccess",
               });
             }
           });
-        }
+          }
+        });
       }
     });
-
-  } catch (error) {
-    res.status(400).json({ error: error });
-
   }
+    }
+  })
 };
-
 /////////------ User SignIn 2 ----////////////////
 exports.login = (req, res) => {
 
