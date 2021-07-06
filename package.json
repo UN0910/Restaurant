@@ -27,5 +27,17 @@
     "otp-generator": "^2.0.0",
     "sha256": "^0.2.0",
     "validate.js": "^0.13.1"
-  }
+  },
+  "description": "node js\r git",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jess70/restoApp-superAdmin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jess70/restoApp-superAdmin/issues"
+  },
+  "homepage": "https://github.com/Jess70/restoApp-superAdmin#readme"
 }

@@ -10,6 +10,7 @@ var UserRouter = require("./routes/user");
 var enquiryRouter = require("./routes/enquiry");
 var loyaltyRouter = require("./routes/points");
 // var SlotsRouter = require('./routes/timeSlots');
+var bookingsRouter = require("./routes/bookings");
 
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -37,6 +38,7 @@ app.use('/user', UserRouter)
 app.use('/enquiry', enquiryRouter)
 // app.use('/slots', SlotsRouter)
 app.use('/points', loyaltyRouter)
+app.use('/bookatres',bookingsRouter);
 
 // app.set('view engine', 'ejs');
 // app.get("/reset-password/:token", function (req, res) {
