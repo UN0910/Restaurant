@@ -2,22 +2,24 @@ const User = require("../model/userModel");
 const Booking = require("../model/bookings");
 const Restaurant = require("../model/restaurantModel");
 const Table = require("../model/tableModel");
+const Loyalty = require("../model/pointsModel");
 const validate = require("validate.js");
 const { Mongoose } = require("mongoose");
 
 exports.CreateBooking =async (req,res)=>{
-    const {userId,restaurant_id,table_id} = req.body;
+    const {userId,restaurant_id,table_id,points} = req.body;
 
     const __user = await User.findOne({_id : userId});
-    const __restaurant = await Restaurant.findOne({_id : restaurant_id});
-    const __table = await Table.findOne({_id : table_id});
+    // const __restaurant = await Restaurant.findOne({_id : restaurant_id});
+    // const __table = await Table.findOne({_id : table_id});
 
-    // console.log(__user,__restaurant, __table);
+    // // console.log(__user,__restaurant, __table);
 
-    if(!__user || !__restaurant || !__table){
-        res.status(400).json({error : "Invalid user/restaurant/table credentials"});
-        return console.log("Invalid UserId, RestaurantId, TableId");
-    }
+    // if(!__user || !__restaurant || !__table){
+    //     res.status(400).json({error : "Invalid user/restaurant/table credentials"});
+    //     return console.log("Invalid UserId, RestaurantId, TableId");
+    // }
+    var type=(req.body.type);
 
     let validation = validate(req.body, {
         email: {
@@ -48,6 +50,12 @@ exports.CreateBooking =async (req,res)=>{
         },
         status : {
             presence : true
+        },
+        type : {
+            presence : true
+        },
+        points : {
+            presence : true
         }
       });
 
@@ -59,10 +67,45 @@ exports.CreateBooking =async (req,res)=>{
       const booking = new Booking({ ...req.body });
 
       booking.save().then((result=>{
-          res.status(200).json({message : "Booking Saved Successfully!"});
-          console.log("Saved Successfully!");
+
+        Loyalty.findOne({customer : __user._id}).then(result=>{
+            type=type.toLowerCase();
+            var closingBalance, openingBalance;
+            openingBalance = result.closingBalance;
+
+            if(type === "credit"){
+                closingBalance = result.openingBalance + points;
+            }else if(type === "debit"){
+                closingBalance = Math.abs(result.closingBalance - points);
+            }else{
+                closingBalance = result.openingBalance;
+            }
+
+            console.log(closingBalance , openingBalance);
+            const loyalty = new Loyalty({
+                customer: result.customer,
+                type: type,
+                points: points,
+                openingBalance: openingBalance,
+                closingBalance: closingBalance,
+                date: Date.now()
+            });
+            loyalty.save((err, result)=>{
+                if(!err){
+                    // res.status(200).json({message: result});
+                }
+            })
+
+        }).catch(err=>{
+            res.status(400).json({error : err});
+            return console.log(err);
+        })
+
+        res.status(200).json({message : "Booking Saved Successfully!"});
+        console.log("Saved Successfully!");
       })).catch(err=>{
           res.status(400).json({error : err});
+          return console.log(err);
       });
 }
 

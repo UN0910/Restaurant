@@ -11,6 +11,7 @@ var enquiryRouter = require("./routes/enquiry");
 var loyaltyRouter = require("./routes/points");
 // var SlotsRouter = require('./routes/timeSlots');
 var bookingsRouter = require("./routes/bookings");
+var reviewRouter = require("./routes/review");
 
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -34,11 +35,12 @@ app.get('/', function (req, res, next) {
   res.send('Hey there!');
 });
 
-app.use('/user', UserRouter)
+app.use('/user', UserRouter);
 app.use('/enquiry', enquiryRouter)
 // app.use('/slots', SlotsRouter)
 app.use('/points', loyaltyRouter)
 app.use('/bookatres',bookingsRouter);
+app.use('/user',reviewRouter);
 
 // app.set('view engine', 'ejs');
 // app.get("/reset-password/:token", function (req, res) {
