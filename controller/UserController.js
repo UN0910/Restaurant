@@ -6,7 +6,7 @@ const timeSlotsModal = require('../model/timeSlots')
 const User = require("../model/userModel");
 const path = require("path");
 const nodemailer = require("nodemailer");
-
+const Loyalty = require('../model/pointsModel');
 const multer = require("multer");
 
 var storage = multer.diskStorage({
@@ -52,6 +52,8 @@ exports.register = (req, res) => {
       const phone = req.body.phone;
       const dob = req.body.dob;
       const name = req.body.name;
+      const referralToken = req.body.referralToken;
+
       let profile_img
 
       if(req.file === undefined){
@@ -78,6 +80,9 @@ exports.register = (req, res) => {
     },
     name :{
       presence : true
+    },
+    referralToken: {
+      length : {minimum: 6, maximum : 6, message : "Enter a valid Referral Token"}
     }
   });
 
@@ -93,6 +98,19 @@ exports.register = (req, res) => {
         res.status(400).json({error : "Email is already in use!"});
         return console.log("Email already in use");
       }else{
+        User.findOne({referralToken : referralToken},(err, result)=>{
+          if(err){
+            return console.log("Error in finding the Referral Token");
+          } else if(result){
+            Loyalty.findOneAndUpdate({customer: result._id}, {$inc:{closingBalance: 100}}, (err, result)=>{
+              return console.log(result.closingBalance);
+            })
+            console.log("Referral Token is valid!");
+          }else if(!result){
+            return console.log("Referral Token is not valid or has been expired!");
+          }
+        })
+
         bcryptjs.hash(password,12,(err,hash)=>{
           if(!err){
             const user = new User({
@@ -104,20 +122,16 @@ exports.register = (req, res) => {
               name : name
             });
             
-          user.save((err)=>{
-            if(err){
-              console.log(err);
-              res.status(400).json({error : "Error while saving user data!"});
-            }else{
-              const token = jwt.sign(
-                { secretId: user._id},
-                process.env.JWT_SECRET
-              );
-              res.status(200).json({
-                message: "SignSuccess",
-              });
-            }
-          });
+            user.save((err)=>{
+              if(err){
+                console.log(err);
+                res.status(400).json({error : "Error while saving user data!"});
+              }else{
+                const token = jwt.sign({ secretId: user._id},process.env.JWT_SECRET);
+                res.status(200).json({message: "SignSuccess"});
+              }
+            });
+            user.generateReferralToken();
           }
         });
       }
@@ -126,7 +140,7 @@ exports.register = (req, res) => {
     }
   })
 };
-/////////------ User SignIn 2 ----////////////////
+/////////------ User SignIn ----////////////////
 exports.login = (req, res) => {
 
   const { email, password } = req.body;
