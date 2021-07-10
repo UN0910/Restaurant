@@ -102,10 +102,22 @@ exports.register = (req, res) => {
           if(err){
             return console.log("Error in finding the Referral Token");
           } else if(result){
-            Loyalty.findOneAndUpdate({customer: result._id}, {$inc:{closingBalance: 100}}, (err, result)=>{
-              return console.log(result.closingBalance);
-            })
-            console.log("Referral Token is valid!");
+            
+            const id = result._id;
+            
+            if(result.referralUsage.length < 5){
+              User.findOneAndUpdate({_id: id}, {$push:{referralUsage: "Referral Used by "+name}}, (err, result)=>{
+                Loyalty.findOneAndUpdate({customer: id}, {$inc:{closingBalance: 100}}, (err, result)=>{
+                  return console.log("Points has been updated!");
+                  })              
+                  console.log("Referral Token is valid!");
+              })
+            }else{
+              User.findOneAndUpdate({_id:id}, {$set:{referralToken: undefined}}, (err, result)=>{
+              return console.log("Token has expired or invalid!");
+              })
+            }
+
           }else if(!result){
             return console.log("Referral Token is not valid or has been expired!");
           }

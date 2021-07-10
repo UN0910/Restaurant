@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     referralUsage: {
-        type: Number,
+        type: [String],
         required: false
     }
 }, {timestamps: true}
